@@ -2,6 +2,7 @@ import dataclasses
 import mimetypes
 import re
 import sqlite3
+import argparse
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -13,6 +14,9 @@ from typing import Optional
 from typing import Set
 from typing import Union
 
+parser = argparse.ArgumentParser(description='Some config...')
+parser.add_argument ('-j', '--joplin', default=Path.home() / '.config/joplin-desktop', help="Path to Joplin directory.")
+args = parser.parse_args()
 
 def contains_word(word: str, text: str) -> bool:
     """
@@ -128,7 +132,7 @@ class JoplinExporter:
 
     content_dir = Path("content")
     static_dir = Path("static/resources")
-    joplin_dir = Path.home() / ".config/joplin-desktop"
+    joplin_dir = Path(args.joplin)
 
     def __init__(self):
         self.resources: Dict[str, Resource] = {}
