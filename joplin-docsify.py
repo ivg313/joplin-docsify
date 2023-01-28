@@ -77,12 +77,12 @@ class Note:
     updated_time: datetime
     tags: List[str] = dataclasses.field(default_factory=list)
 
-    def is_private(self) -> bool:
+    def is_public(self) -> bool:
         """
-        Check whether a note is private.
+        Check whether a note has tag public.
 
-        This function checks a note's title and tags and returns whether it
-        should be considered private or whether it should be published.
+        This function checks a note's tags and returns whether it
+        should be published.
         """
         keywords = ["public"]
         for keyword in keywords:
@@ -249,7 +249,7 @@ class JoplinExporter:
                 datetime.fromtimestamp(updated_time / 1000),
                 tags=note_tags[id],
             )
-            if note.is_private():
+            if note.is_public():
                 continue
 
             self.notes[note.folder.id].append(note)
