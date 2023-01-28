@@ -306,7 +306,7 @@ class JoplinExporter:
                 print(f"Exporting {note.title}...")
                 items.append(note.get_summary_line(level))
 
-        with (self.content_dir / "SUMMARY.md").open("w") as outfile:
+        with (self.content_dir / "SUMMARY.md").open(mode="w", encoding="utf-8") as outfile:
             outfile.write("# Summary\n\n")
             # Special-case the introduction.
             if introduction:
@@ -345,7 +345,7 @@ email me at <a href="mailto:hi@stavros.io">hi@stavros.io</a>.
 """
                     )
 
-            with (dir / "index.md").open(mode="w") as outfile:
+            with (dir / "index.md").open(mode="w", encoding="utf-8") as outfile:
                 contents_list = "\n1. ".join(
                     f"[{title}](../../{url})" for title, url in contents
                 )
