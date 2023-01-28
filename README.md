@@ -9,4 +9,5 @@ https://gitlab.com/stavros/notes
 - fix creating empty folders
 - remake SUMMARY.md generator to _sidebar.md
 - test images/videos/etc export
+- check 
 - ...
