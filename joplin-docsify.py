@@ -82,11 +82,11 @@ class Note:
         This function checks a note's title and tags and returns whether it
         should be considered private or whether it should be published.
         """
-        hidden_keywords = ["private", "wip", "draft"]
-        for keyword in hidden_keywords:
-            if contains_word(keyword, self.title) or keyword in self.tags:
-                return True
-        return False
+        keywords = ["public"]
+        for keyword in keywords:
+            if keyword in self.tags:
+                return False
+        return True
 
     def get_url(self) -> str:
         """Return the note's relative URL."""
