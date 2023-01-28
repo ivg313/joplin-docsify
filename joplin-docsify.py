@@ -15,8 +15,10 @@ from typing import Set
 from typing import Union
 
 parser = argparse.ArgumentParser(description='Some config...')
-parser.add_argument ('-j', '--joplin', default=Path.home() / '.config/joplin-desktop', help="Path to Joplin directory.")
+parser.add_argument('-j', '--joplin', default=Path.home() /
+                    '.config/joplin-desktop', help="Path to Joplin directory.")
 args = parser.parse_args()
+
 
 def contains_word(word: str, text: str) -> bool:
     """
@@ -194,7 +196,8 @@ class JoplinExporter:
         for resource_id in self.used_resources:
             resource = self.resources[resource_id]
             copy(
-                self.joplin_dir / "resources" / (f"{resource_id}.{resource.extension}"),
+                self.joplin_dir / "resources" /
+                (f"{resource_id}.{resource.extension}"),
                 self.static_dir / f"{resource_id}{resource.derived_ext}",
             )
 
@@ -328,37 +331,26 @@ class JoplinExporter:
             for note in sorted(self.notes[folder.id], key=lambda n: n.title):
                 print(f"Exporting {folder.title} - {note.title}...")
                 contents.append((note.title, f"{note.get_url()}.html"))
-                with (self.content_dir / (note.get_url() + ".md")).open(
-                    mode="w", encoding="utf-8"
-                ) as outfile:
-                    outfile.write(
-                        f"""# {note.title}
-
-{self.resolve_note_links(note)}
-
-* * *
-
-<p style="font-size:80%; font-style: italic">
-Last updated on {note.updated_time:%B %d, %Y}. For any questions/feedback,
-email me at <a href="mailto:hi@stavros.io">hi@stavros.io</a>.
-</p>
-"""
+                with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
+                    outfile.write(f"""# {note.title}
+                    {self.resolve_note_links(note)}
+                    """
                     )
 
-            with (dir / "index.md").open(mode="w", encoding="utf-8") as outfile:
-                contents_list = "\n1. ".join(
-                    f"[{title}](../../{url})" for title, url in contents
-                )
-                outfile.write(
-                    f"""# Contents
+#            with (dir / "index.md").open(mode="w", encoding="utf-8") as outfile:
+ #               contents_list = "\n1. ".join(
+  #                  f"[{title}](../../{url})" for title, url in contents
+   #             )
+    #            outfile.write(
+     #               f"""# Contents
 
-Click on a link in the list below to go to that page:
+#Click on a link in the list below to go to that page:
 
-1. {contents_list}
-"""
-                )
+#1. {contents_list}
+#"""
+ #               )
 
-        self.write_summary()
+     #   self.write_summary()
         self.copy_resources()
 
 
