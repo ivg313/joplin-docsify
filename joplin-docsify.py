@@ -132,8 +132,8 @@ class Resource:
 class JoplinExporter:
     """The main exporter class."""
 
-    content_dir = Path("content")
-    static_dir = Path("static/resources")
+    content_dir = Path("docsify")
+    static_dir = Path("docsify/resources")
     joplin_dir = Path(args.joplin)
 
     def __init__(self):
