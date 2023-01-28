@@ -6,7 +6,7 @@ Based on the joplinexport script written by Stavros Korokithakis:
 https://gitlab.com/stavros/notes
 
 ## ToDo
-- fix creating empty folders
+- make folder only for public notes
 - remake SUMMARY.md generator to _sidebar.md
 - test images/videos/etc export
 - See if the hyperlinks from Note to Note are working 
