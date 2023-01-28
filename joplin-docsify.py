@@ -327,9 +327,9 @@ class JoplinExporter:
         for folder in folder_list:
             contents = []
             dir = self.content_dir / folder.get_url()
-            dir.mkdir(parents=True, exist_ok=True)
             for note in sorted(self.notes[folder.id], key=lambda n: n.title):
                 print(f"Exporting {folder.title} - {note.title}...")
+                dir.mkdir(parents=True, exist_ok=True)
                 contents.append((note.title, f"{note.get_url()}.html"))
                 with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
                     outfile.write(f"""# {note.title}
