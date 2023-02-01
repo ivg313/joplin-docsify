@@ -31,7 +31,9 @@ def contains_word(word: str, text: str) -> bool:
 
 def slugify(text):
     """Convert `text` into a slug."""
-    return re.sub(r"[\W_]+", "-", text.lower()).strip("-")
+    return text
+    #return re.sub(r"[\W_]+", "-", text.lower()).strip("-")
+
 
 
 @dataclasses.dataclass
