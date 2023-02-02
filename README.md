@@ -7,7 +7,7 @@ Based on the joplinexport script written by Stavros Korokithakis: https://gitlab
 ## ToDo
 - ~~make folder only for public notes~~
 - ~~test images/videos/etc export~~
-- Rewrite files (and images) export: imho they should be in folder with same name as note or something like that.
+- ~~Rewrite files (and images) export: imho they should be in folder with same name as note or something like that.~~ (kind of impossible, fuck it)
 - remake SUMMARY.md generator to _sidebar.md
 - See if the hyperlinks from Note to Note are working 
 - ...
