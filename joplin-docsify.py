@@ -31,8 +31,7 @@ def contains_word(word: str, text: str) -> bool:
 
 def slugify(text):
     """Convert `text` into a slug."""
-    return text
-    #return re.sub(r"[\W_]+", "-", text.lower()).strip("-")
+    return re.sub(r"[\W_]+", "_", text).strip("_")
 
 
 
@@ -134,8 +133,8 @@ class Resource:
 class JoplinExporter:
     """The main exporter class."""
 
-    content_dir = Path("docsify")
-    static_dir = Path("docsify/resources")
+    content_dir = Path("docsify/export")
+    static_dir = Path("docsify/export/resources")
     joplin_dir = Path(args.joplin)
 
     def __init__(self):
