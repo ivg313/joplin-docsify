@@ -133,8 +133,8 @@ class Resource:
 class JoplinExporter:
     """The main exporter class."""
 
-    content_dir = Path("docsify/export")
-    static_dir = Path("docsify/export/resources")
+    content_dir = Path("docsify/export-notes")
+    static_dir = Path("docsify/export-resources")
     joplin_dir = Path(args.joplin)
 
     def __init__(self):
@@ -190,7 +190,7 @@ class JoplinExporter:
         # Add the resource to the set of used resources, so we can only copy
         # the resources that are used.
         self.used_resources.add(resource_id)
-        return "resources/" + resource_id + resource.derived_ext
+        return "export-resources/" + resource_id + resource.derived_ext
 
     def copy_resources(self):
         """Copy all the used resources to the output directory."""
