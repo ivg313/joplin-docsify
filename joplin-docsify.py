@@ -17,6 +17,7 @@ from typing import Union
 parser = argparse.ArgumentParser(description='Some config...')
 parser.add_argument('-j', '--joplin', default=Path.home() /
                     '.config/joplin-desktop', help="Path to Joplin directory.")
+parser.add_argument('-d', '--docsify', default='docsify', help="Path to Docsify directory.")
 args = parser.parse_args()
 
 
@@ -133,8 +134,8 @@ class Resource:
 class JoplinExporter:
     """The main exporter class."""
 
-    content_dir = Path("docsify/export-notes")
-    static_dir = Path("docsify/export-resources")
+    content_dir = Path(f"{args.docsify}/export-notes")
+    static_dir = Path(f"{args.docsify}/export-resources")
     joplin_dir = Path(args.joplin)
 
     def __init__(self):
