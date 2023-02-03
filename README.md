@@ -4,6 +4,16 @@ This is in early development right now.
 
 Based on the joplinexport script written by Stavros Korokithakis: https://gitlab.com/stavros/notes
 
+## Warning
+It does not support nested notebooks (subnotebooks) like:
+```
+Notebook
+    SubNotebook
+        Note 1
+        Note 2
+```
+
+
 ## ToDo
 - ~~make folder only for public notes~~
 - ~~test images/videos/etc export~~
