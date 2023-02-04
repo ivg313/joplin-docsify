@@ -336,7 +336,7 @@ class JoplinExporter:
                 dir.mkdir(parents=True, exist_ok=True)
                 #contents.append((note.title, f"{note.get_url()}.html"))
                 with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
-                    outfile.write(f"""# {note.title}\n{self.resolve_note_links(note)}""")
+                    outfile.write(f"""> {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
         self.write_summary()
         self.copy_resources()
         with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:

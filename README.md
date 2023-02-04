@@ -22,6 +22,6 @@ Notebook
 - ~~Rewrite files (and images) export: imho they should be in folder with same name as note or something like that.~~ (kind of impossible, fuck it)
 - ~~remake SUMMARY.md generator to _sidebar.md~~ 
 - ~~See if the hyperlinks from Note to Note are working~~
+- ~~Decide how and where to display the last changed information~~
 - Figure out how to generate README.md (home page)
-- Decide how and where to display the last changed information
 - ...
