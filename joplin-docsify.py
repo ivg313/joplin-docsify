@@ -89,8 +89,8 @@ class Note:
         keywords = ["public"]
         for keyword in keywords:
             if keyword in self.tags:
-                return False
-        return True
+                return True
+        return False
 
     def get_url(self) -> str:
         """Return the note's relative URL."""
@@ -252,7 +252,7 @@ class JoplinExporter:
                 datetime.fromtimestamp(updated_time / 1000),
                 tags=note_tags[id],
             )
-            if note.is_public():
+            if not note.is_public():
                 continue
 
             self.notes[note.folder.id].append(note)
@@ -276,7 +276,7 @@ class JoplinExporter:
         folders: List[Folder] = list
         for note_list in self.notes.values():
             for note in note_list:
-                if "docsify readme.md" in note.tags:
+                if "public homepage" in note.tags:
                     introduction = note
                     continue
                 note_item = [note]
@@ -333,12 +333,10 @@ class JoplinExporter:
         self.clean_content_dir()
 
         for folder in folder_list:
-            # contents = []
             dir = self.content_dir / folder.get_url()
             for note in sorted(self.notes[folder.id], key=lambda n: n.title):
                 print(f"Exporting note {folder.title} - {note.title}...")
                 dir.mkdir(parents=True, exist_ok=True)
-                # contents.append((note.title, f"{note.get_url()}.html"))
                 with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
                     outfile.write(
                         f"""> {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
