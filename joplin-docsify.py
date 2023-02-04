@@ -276,7 +276,7 @@ class JoplinExporter:
         folders: List[Folder] = list
         for note_list in self.notes.values():
             for note in note_list:
-                if note.folder.title == "Welcome":
+                if "docsify readme.md" in note.tags:
                     introduction = note
                     continue
                 note_item = [note]
@@ -314,11 +314,14 @@ class JoplinExporter:
                 items.append(note.get_summary_line(level))
 
         with (self.content_dir / "_sidebar.md").open(mode="w", encoding="utf-8") as outfile:
-            #outfile.write("# Summary\n\n")
-            # Special-case the introduction.
-            #if introduction:
-            #    outfile.write(introduction.get_summary_line(0) + "\n")
             outfile.write("\n".join(items))
+        
+        with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
+            if introduction:
+                outfile.write(f"""{self.resolve_note_links(introduction)}\n> {introduction.updated_time:%c}""")
+            else:
+                outfile.write('&nbsp;') # Docsify needed non-empty README.md to work. So lets add invisibe non-breaking space.
+
 
     def export(self):
         """Export all the notes to a static site."""
@@ -339,9 +342,6 @@ class JoplinExporter:
                     outfile.write(f"""> {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
         self.write_summary()
         self.copy_resources()
-        with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
-            outfile.write('this is the README.md file')
-
 
 if __name__ == "__main__":
     print("Exporting Joplin database...")
