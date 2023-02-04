@@ -261,7 +261,7 @@ class JoplinExporter:
         conn.close()
 
     def write_summary(self):
-        """Write the SUMMARY.md that mdBook needs."""
+        """Write the _sidebar.md that mdBook needs."""
         # We construct a note tree by adding each note into its parent.
         note_tree: Dict[str, List[Union[Note, Folder]]] = defaultdict(list)
 
