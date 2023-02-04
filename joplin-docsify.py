@@ -54,7 +54,7 @@ class Folder:
 
     def get_summary_line(self, level: int) -> str:
         """Get the appropriate summary file line for this folder."""
-        return ("    " * (level - 1)) + f"- [{self.title}]({self.get_url()}/index.md)"
+        return ("    " * (level - 1)) + f"- {self.title}"
 
     def __lt__(self, other: Union["Folder", "Note"]) -> bool:
         """Support comparison, for sorting."""
@@ -165,14 +165,15 @@ class JoplinExporter:
             item_id = match.group(1)
             new_url = self.get_note_url_by_id(item_id)
             if new_url:
-                new_url += ".html"
+                #new_url += ".html"
+                pass
             else:
                 new_url = self.get_resource_url_by_id(item_id)
                 if not new_url:
                     new_url = item_id
             if match.group(2):
                 new_url += match.group(2)
-            return f"](/{new_url})"
+            return f"]({new_url})"
 
         return re.sub(r"\]\(:/([a-f0-9]{32})(#.*?)?\)", replacement, note.body)
 
@@ -191,7 +192,7 @@ class JoplinExporter:
         # Add the resource to the set of used resources, so we can only copy
         # the resources that are used.
         self.used_resources.add(resource_id)
-        return "export-resources/" + resource_id + resource.derived_ext
+        return "../../export-resources/" + resource_id + resource.derived_ext
 
     def copy_resources(self):
         """Copy all the used resources to the output directory."""
@@ -305,17 +306,18 @@ class JoplinExporter:
             if isinstance(note_list[-1], Folder):
                 # The last item in the list is a folder, which means this is a header.
                 items.append(note_list[-1].get_summary_line(level))
+                #items.append(("    " * (level - 1)) + f"- [{note_list[-1].title}]")
             else:
                 # This is a regular note.
                 note = note_list[-1]
                 print(f"Exporting {note.title}...")
                 items.append(note.get_summary_line(level))
 
-        with (self.content_dir / "SUMMARY.md").open(mode="w", encoding="utf-8") as outfile:
-            outfile.write("# Summary\n\n")
+        with (self.content_dir / "_sidebar.md").open(mode="w", encoding="utf-8") as outfile:
+            #outfile.write("# Summary\n\n")
             # Special-case the introduction.
-            if introduction:
-                outfile.write(introduction.get_summary_line(0) + "\n")
+            #if introduction:
+            #    outfile.write(introduction.get_summary_line(0) + "\n")
             outfile.write("\n".join(items))
 
     def export(self):
@@ -327,33 +329,18 @@ class JoplinExporter:
         self.clean_content_dir()
 
         for folder in folder_list:
-            contents = []
+            #contents = []
             dir = self.content_dir / folder.get_url()
             for note in sorted(self.notes[folder.id], key=lambda n: n.title):
                 print(f"Exporting {folder.title} - {note.title}...")
                 dir.mkdir(parents=True, exist_ok=True)
-                contents.append((note.title, f"{note.get_url()}.html"))
+                #contents.append((note.title, f"{note.get_url()}.html"))
                 with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
-                    outfile.write(f"""# {note.title}
-                    {self.resolve_note_links(note)}
-                    """
-                    )
-
-#            with (dir / "index.md").open(mode="w", encoding="utf-8") as outfile:
- #               contents_list = "\n1. ".join(
-  #                  f"[{title}](../../{url})" for title, url in contents
-   #             )
-    #            outfile.write(
-     #               f"""# Contents
-
-#Click on a link in the list below to go to that page:
-
-#1. {contents_list}
-#"""
- #               )
-
-     #   self.write_summary()
+                    outfile.write(f"""# {note.title}\n{self.resolve_note_links(note)}""")
+        self.write_summary()
         self.copy_resources()
+        with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
+            outfile.write('this is the README.md file')
 
 
 if __name__ == "__main__":
