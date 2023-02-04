@@ -252,8 +252,6 @@ class JoplinExporter:
                 datetime.fromtimestamp(updated_time / 1000),
                 tags=note_tags[id],
             )
-            if not note.is_public():
-                continue
 
             self.notes[note.folder.id].append(note)
             self.note_lookup_dict[note.id] = note
@@ -279,6 +277,8 @@ class JoplinExporter:
                 if "public homepage" in note.tags:
                     introduction = note
                     continue
+                if not note.is_public():
+                    continue
                 note_item = [note]
                 item: Union[Folder, Note] = note
                 while True:
@@ -299,7 +299,7 @@ class JoplinExporter:
                 note_tree.append(note_item)
         note_tree.sort()
 
-        # Generate the summary file.
+        # Generate the sidebar file.
         items = []
         for note_list in note_tree:
             level = len(note_list)
@@ -335,11 +335,12 @@ class JoplinExporter:
         for folder in folder_list:
             dir = self.content_dir / folder.get_url()
             for note in sorted(self.notes[folder.id], key=lambda n: n.title):
-                print(f"Exporting note {folder.title} - {note.title}...")
-                dir.mkdir(parents=True, exist_ok=True)
-                with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
-                    outfile.write(
-                        f"""> {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
+                if note.is_public():
+                    print(f"Exporting note {folder.title} - {note.title}...")
+                    dir.mkdir(parents=True, exist_ok=True)
+                    with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
+                        outfile.write(
+                            f"""> {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
         self.write_summary()
         self.copy_resources()
 
