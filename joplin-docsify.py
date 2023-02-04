@@ -17,7 +17,8 @@ from typing import Union
 parser = argparse.ArgumentParser(description='Some config...')
 parser.add_argument('-j', '--joplin', default=Path.home() /
                     '.config/joplin-desktop', help="Path to Joplin directory.")
-parser.add_argument('-d', '--docsify', default='docsify', help="Path to Docsify directory.")
+parser.add_argument('-d', '--docsify', default='docsify',
+                    help="Path to Docsify directory.")
 args = parser.parse_args()
 
 
@@ -33,7 +34,6 @@ def contains_word(word: str, text: str) -> bool:
 def slugify(text):
     """Convert `text` into a slug."""
     return re.sub(r"[\W_]+", "_", text).strip("_")
-
 
 
 @dataclasses.dataclass
@@ -165,7 +165,7 @@ class JoplinExporter:
             item_id = match.group(1)
             new_url = self.get_note_url_by_id(item_id)
             if new_url:
-                #new_url += ".html"
+                # new_url += ".html"
                 pass
             else:
                 new_url = self.get_resource_url_by_id(item_id)
@@ -306,22 +306,23 @@ class JoplinExporter:
             if isinstance(note_list[-1], Folder):
                 # The last item in the list is a folder, which means this is a header.
                 items.append(note_list[-1].get_summary_line(level))
-                #items.append(("    " * (level - 1)) + f"- [{note_list[-1].title}]")
+                # items.append(("    " * (level - 1)) + f"- [{note_list[-1].title}]")
             else:
                 # This is a regular note.
                 note = note_list[-1]
-                print(f"Exporting {note.title}...")
+                print(f"Exporting Folder {note.title}...")
                 items.append(note.get_summary_line(level))
 
         with (self.content_dir / "_sidebar.md").open(mode="w", encoding="utf-8") as outfile:
             outfile.write("\n".join(items))
-        
+
         with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
             if introduction:
-                outfile.write(f"""{self.resolve_note_links(introduction)}\n> {introduction.updated_time:%c}""")
+                outfile.write(
+                    f"""{self.resolve_note_links(introduction)}\n> {introduction.updated_time:%c}""")
             else:
-                outfile.write('&nbsp;') # Docsify needed non-empty README.md to work. So lets add invisibe non-breaking space.
-
+                # Docsify needed non-empty README.md to work. So lets add invisibe non-breaking space.
+                outfile.write('&nbsp;')
 
     def export(self):
         """Export all the notes to a static site."""
@@ -332,16 +333,18 @@ class JoplinExporter:
         self.clean_content_dir()
 
         for folder in folder_list:
-            #contents = []
+            # contents = []
             dir = self.content_dir / folder.get_url()
             for note in sorted(self.notes[folder.id], key=lambda n: n.title):
-                print(f"Exporting {folder.title} - {note.title}...")
+                print(f"Exporting note {folder.title} - {note.title}...")
                 dir.mkdir(parents=True, exist_ok=True)
-                #contents.append((note.title, f"{note.get_url()}.html"))
+                # contents.append((note.title, f"{note.get_url()}.html"))
                 with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
-                    outfile.write(f"""> {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
+                    outfile.write(
+                        f"""> {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
         self.write_summary()
         self.copy_resources()
+
 
 if __name__ == "__main__":
     print("Exporting Joplin database...")
