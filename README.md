@@ -23,6 +23,5 @@ Notebook
 - ~~remake SUMMARY.md generator to _sidebar.md~~ 
 - ~~See if the hyperlinks from Note to Note are working~~
 - Figure out how to generate README.md (home page)
-- Decide how and where display last modify info
 - Decide how and where to display the last changed information
 - ...
