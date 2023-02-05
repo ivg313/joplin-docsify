@@ -134,8 +134,8 @@ class Resource:
 class JoplinExporter:
     """The main exporter class."""
 
-    content_dir = Path(f"{args.docsify}/export-notes")
-    static_dir = Path(f"{args.docsify}/export-resources")
+    content_dir = Path(f"{args.docsify}/joplin-notes")
+    static_dir = Path(f"{args.docsify}/joplin-resources")
     joplin_dir = Path(args.joplin)
 
     def __init__(self):
@@ -192,7 +192,7 @@ class JoplinExporter:
         # Add the resource to the set of used resources, so we can only copy
         # the resources that are used.
         self.used_resources.add(resource_id)
-        return "../../export-resources/" + resource_id + resource.derived_ext
+        return "joplin-resources/" + resource_id + resource.derived_ext
 
     def copy_resources(self):
         """Copy all the used resources to the output directory."""
@@ -319,7 +319,7 @@ class JoplinExporter:
         with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
             if introduction:
                 outfile.write(
-                    f"""{self.resolve_note_links(introduction)}\n> {introduction.updated_time:%c}""")
+                    f"""{self.resolve_note_links(introduction)}\n\n> {introduction.updated_time:%c}""")
             else:
                 # Docsify needed non-empty README.md to work. So lets add invisibe non-breaking space.
                 outfile.write('&nbsp;')
