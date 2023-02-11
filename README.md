@@ -27,6 +27,6 @@ Notebook
 - [x] Docsify index.html generator with args control
 - [x] Kind of "News" on homepage
 - [x] Figure out how I want to sort folders, articles in folders and implement this (i'm to lazy and stupid to do this)
-- [ ] Move from "updated" to "created" datetime
+- [x] Move from "updated" to "created" datetime
 - [ ] Rebuild only if Joplin database changed
 - [ ] ...

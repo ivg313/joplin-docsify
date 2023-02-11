@@ -85,6 +85,7 @@ class Note:
     title: str
     body: str
     updated_time: datetime
+    created_time: datetime
     tags: List[str] = dataclasses.field(default_factory=list)
 
     def is_public(self) -> bool:
@@ -246,8 +247,8 @@ class JoplinExporter:
             for id, title, mime, ext in c.fetchall()
         }
 
-        c.execute("""SELECT id, parent_id, title, body, updated_time FROM notes;""")
-        for id, parent_id, title, body, updated_time in c.fetchall():
+        c.execute("""SELECT id, parent_id, title, body, updated_time, created_time FROM notes;""")
+        for id, parent_id, title, body, updated_time, created_time in c.fetchall():
             if parent_id not in self.folders:
                 # This note is in a private folder, continue.
                 continue
@@ -258,6 +259,7 @@ class JoplinExporter:
                 title,
                 body,
                 datetime.fromtimestamp(updated_time / 1000),
+                datetime.fromtimestamp(created_time / 1000),
                 tags=note_tags[id],
             )
 
@@ -329,7 +331,7 @@ class JoplinExporter:
             outfile.write(f"- [{args.name}](/)\n")
             outfile.write("\n".join(items))
 
-        for new in sorted(news, key=lambda n: n.updated_time, reverse=True):
+        for new in sorted(news, key=lambda n: n.created_time, reverse=True):
             latest.append(f"[{new.title}]({new.get_url()})")
 
         with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
@@ -358,7 +360,7 @@ class JoplinExporter:
                     dir.mkdir(parents=True, exist_ok=True)
                     with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
                         outfile.write(
-                            f"""> {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
+                            f"""> Created: {note.created_time:%c}, updated: {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
         self.write_summary()
         self.copy_resources()
         if not args.save_index:
