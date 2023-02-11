@@ -25,4 +25,5 @@ Notebook
 - [x] Decide how and where to display the last changed information
 - [x] Figure out how to generate README.md (home page)
 - [x] Docsify index.html generator with args control
+- [ ] Kind of "News" on homepage
 - [ ] ...
