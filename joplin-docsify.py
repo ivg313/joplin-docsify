@@ -25,6 +25,8 @@ parser.add_argument('-n', '--name', default='My Notes',
                     help='Name of your site.')
 parser.add_argument('-s', '--save-index', action='store_true',
                     help='Do not overwrite index.html')
+parser.add_argument('-l', '--disable-latest', action='store_true',
+                    help='Do not list latest notes on homepage')
 args = parser.parse_args()
 
 
@@ -307,6 +309,8 @@ class JoplinExporter:
 
         # Generate the sidebar file.
         items = []
+        news = []
+        latest = []
         for note_list in note_tree:
             level = len(note_list)
             if isinstance(note_list[-1], Folder):
@@ -316,20 +320,30 @@ class JoplinExporter:
             else:
                 # This is a regular note.
                 note = note_list[-1]
-                print(f"Exporting Folder {note.title}...")
+                # print(f"Exporting Folder {note.title}...")
+                # print(f"test: [{note.title}]({note.get_url()})")
+                news.append(note)
                 items.append(note.get_summary_line(level))
 
         with (self.content_dir / "_sidebar.md").open(mode="w", encoding="utf-8") as outfile:
             outfile.write(f"- [{args.name}](/)\n")
             outfile.write("\n".join(items))
 
+        for new in sorted(news, key=lambda n: n.updated_time, reverse=True):
+            latest.append(f"[{new.title}]({new.get_url()})")
+
         with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
             if introduction:
                 outfile.write(
-                    f"""{self.resolve_note_links(introduction)}\n\n> {introduction.updated_time:%c}""")
+                    f"""{self.resolve_note_links(introduction)}\n\n""")
+                if not args.disable_latest:
+                    outfile.write(f"\\\n".join(latest))
             else:
-                # Docsify needed non-empty README.md to work. So lets add invisibe non-breaking space.
-                outfile.write('&nbsp;')
+                if not args.disable_latest:
+                    outfile.write(f"\\\n".join(latest))
+                else:
+                    # Docsify needed non-empty README.md to work. So lets add invisibe non-breaking space.
+                    outfile.write('&nbsp;')
 
     def export(self):
         """Export all the notes to a static site."""
