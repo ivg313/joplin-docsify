@@ -26,4 +26,5 @@ Notebook
 - [x] Figure out how to generate README.md (home page)
 - [x] Docsify index.html generator with args control
 - [ ] Kind of "News" on homepage
+- [ ] Figure out how I want to sort folders, articles in folders and implement this
 - [ ] ...
