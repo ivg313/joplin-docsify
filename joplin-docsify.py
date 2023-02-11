@@ -27,6 +27,8 @@ parser.add_argument('-s', '--save-index', action='store_true',
                     help='Do not overwrite index.html')
 parser.add_argument('-l', '--disable-latest', action='store_true',
                     help='Do not list latest notes on homepage')
+parser.add_argument('-f', '--force', action='store_true',
+                    help='Force rebuild even if nothing change')
 args = parser.parse_args()
 
 
@@ -42,7 +44,6 @@ def contains_word(word: str, text: str) -> bool:
 def slugify(text):
     """Convert `text` into a slug."""
     return re.sub(r"[\W_]+", "_", text).strip("_")
-
 
 @dataclasses.dataclass
 class Folder:
@@ -213,10 +214,24 @@ class JoplinExporter:
                 self.static_dir / f"{resource_id}{resource.derived_ext}",
             )
 
+    def check_new(self,seq):
+        seq_file = self.index_dir / "sequence.txt"
+        seq_file.touch()
+        with (seq_file).open(mode="r+", encoding="utf-8") as outfile:
+            if outfile.read() == seq and not args.force:
+                quit()
+            else:
+                outfile.seek(0,0)
+                outfile.truncate()
+                outfile.write(str(seq))
+
     def read_data(self):
         """Read the data from the Joplin database."""
         conn = sqlite3.connect(self.joplin_dir / "database.sqlite")
         c = conn.cursor()
+
+        c.execute("""SELECT seq FROM sqlite_sequence WHERE name='item_changes';""")
+        self.check_new(str(c.fetchone()[0]))
 
         c.execute("""SELECT id, title, parent_id FROM folders;""")
         self.folders = {
