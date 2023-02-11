@@ -19,6 +19,12 @@ parser.add_argument('-j', '--joplin', default=Path.home() /
                     '.config/joplin-desktop', help="Path to Joplin directory.")
 parser.add_argument('-d', '--docsify', default='docsify',
                     help="Path to Docsify directory.")
+parser.add_argument('-t', '--theme', default='vue',
+                    help='Docsift theme, default is "vue", alternatives: "buble", "dark" and "pure"')
+parser.add_argument('-n', '--name', default='My Notes',
+                    help='Name of your site.')
+parser.add_argument('-s', '--save-index', action='store_true',
+                    help='Do not overwrite index.html')
 args = parser.parse_args()
 
 
@@ -133,7 +139,7 @@ class Resource:
 
 class JoplinExporter:
     """The main exporter class."""
-
+    index_dir = Path(args.docsify)
     content_dir = Path(f"{args.docsify}/joplin-notes")
     static_dir = Path(f"{args.docsify}/joplin-resources")
     joplin_dir = Path(args.joplin)
@@ -314,6 +320,7 @@ class JoplinExporter:
                 items.append(note.get_summary_line(level))
 
         with (self.content_dir / "_sidebar.md").open(mode="w", encoding="utf-8") as outfile:
+            outfile.write(f"- [{args.name}](/)\n")
             outfile.write("\n".join(items))
 
         with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
@@ -327,11 +334,8 @@ class JoplinExporter:
     def export(self):
         """Export all the notes to a static site."""
         self.read_data()
-
         folder_list = sorted(self.folders.values())
-
         self.clean_content_dir()
-
         for folder in folder_list:
             dir = self.content_dir / folder.get_url()
             for note in sorted(self.notes[folder.id], key=lambda n: n.title):
@@ -343,6 +347,42 @@ class JoplinExporter:
                             f"""> {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
         self.write_summary()
         self.copy_resources()
+        if not args.save_index:
+            self.write_html()
+
+    def write_html(self):
+        with (self.index_dir / "index.html").open(mode="w", encoding="utf-8") as outfile:
+            outfile.write(f"""
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/{args.theme}.css">
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {{
+      basePath: "joplin-notes",
+      loadSidebar: true,
+      subMaxLevel: 10,
+      search: 'auto',
+      markdown: {{
+        renderer: {{
+          image: function (href, title, text) {{
+            return `<img src="${{href}}" data-origin="${{href}}" alt="${{text}}">`
+          }}
+        }}
+      }},
+    }}
+  </script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+</body>
+</html>
+            """)
 
 
 if __name__ == "__main__":
