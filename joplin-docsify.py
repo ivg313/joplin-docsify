@@ -347,7 +347,7 @@ class JoplinExporter:
             outfile.write("\n".join(items))
 
         for new in sorted(news, key=lambda n: n.created_time, reverse=True):
-            latest.append(f"[{new.title}]({new.get_url()})")
+            latest.append(f"[{new.folder.title} — {new.title}]({new.get_url()})")
 
         with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
             if introduction:
