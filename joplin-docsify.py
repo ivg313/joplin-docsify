@@ -45,6 +45,7 @@ def slugify(text):
     """Convert `text` into a slug."""
     return re.sub(r"[\W_]+", "_", text).strip("_")
 
+
 @dataclasses.dataclass
 class Folder:
     """A helper type for a folder."""
@@ -214,14 +215,14 @@ class JoplinExporter:
                 self.static_dir / f"{resource_id}{resource.derived_ext}",
             )
 
-    def check_new(self,seq):
+    def check_new(self, seq):
         seq_file = self.index_dir / "sequence.txt"
         seq_file.touch()
         with (seq_file).open(mode="r+", encoding="utf-8") as outfile:
             if outfile.read() == seq and not args.force:
                 quit()
             else:
-                outfile.seek(0,0)
+                outfile.seek(0, 0)
                 outfile.truncate()
                 outfile.write(str(seq))
 
@@ -262,7 +263,8 @@ class JoplinExporter:
             for id, title, mime, ext in c.fetchall()
         }
 
-        c.execute("""SELECT id, parent_id, title, body, updated_time, created_time FROM notes;""")
+        c.execute(
+            """SELECT id, parent_id, title, body, updated_time, created_time FROM notes;""")
         for id, parent_id, title, body, updated_time, created_time in c.fetchall():
             if parent_id not in self.folders:
                 # This note is in a private folder, continue.
@@ -315,12 +317,6 @@ class JoplinExporter:
                             break
                     note_item.insert(0, item)
 
-                # Append the folders to the list if they weren't there before, as that's
-                # the only way this algorithm can generate headlines.
-                if folders != note_item[:-1]:
-                    folders = note_item[:-1]
-                    note_tree.append(folders)
-
                 note_tree.append(note_item)
         note_tree.sort()
 
@@ -329,25 +325,23 @@ class JoplinExporter:
         news = []
         latest = []
         for note_list in note_tree:
-            level = len(note_list)
-            if isinstance(note_list[-1], Folder):
-                # The last item in the list is a folder, which means this is a header.
-                items.append(note_list[-1].get_summary_line(level))
-                # items.append(("    " * (level - 1)) + f"- [{note_list[-1].title}]")
-            else:
-                # This is a regular note.
-                note = note_list[-1]
-                # print(f"Exporting Folder {note.title}...")
-                # print(f"test: [{note.title}]({note.get_url()})")
-                news.append(note)
-                items.append(note.get_summary_line(level))
+            lvl = 0
+            for branch in note_list:
+                lvl += 1
+                if isinstance(branch, Folder):
+                    if branch.get_summary_line(lvl) not in items:
+                        items.append(branch.get_summary_line(lvl))
+                elif isinstance(branch, Note):
+                    news.append(branch)
+                    items.append(branch.get_summary_line(lvl))
 
         with (self.content_dir / "_sidebar.md").open(mode="w", encoding="utf-8") as outfile:
             outfile.write(f"- [{args.name}](/)\n")
             outfile.write("\n".join(items))
 
         for new in sorted(news, key=lambda n: n.created_time, reverse=True):
-            latest.append(f"[{new.folder.title} — {new.title}]({new.get_url()})")
+            latest.append(
+                f"[{new.folder.title} — {new.title}]({new.get_url()})")
 
         with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
             if introduction:
@@ -368,10 +362,10 @@ class JoplinExporter:
         folder_list = sorted(self.folders.values())
         self.clean_content_dir()
         for folder in folder_list:
-            dir = self.content_dir / folder.get_url()
             for note in sorted(self.notes[folder.id], key=lambda n: n.title):
                 if note.is_public():
-                    print(f"Exporting note {folder.title} - {note.title}...")
+                    dir = self.content_dir / folder.get_url()
+                    print(f"Exporting note {dir} {note.title}...")
                     dir.mkdir(parents=True, exist_ok=True)
                     with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
                         outfile.write(
