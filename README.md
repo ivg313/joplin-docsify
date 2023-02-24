@@ -4,19 +4,6 @@ This is in early development right now.
 
 Based on the joplinexport script written by Stavros Korokithakis: https://gitlab.com/stavros/notes
 
-## Warning
-Nested notebooks or sub-notebooks are not supported!
-I won't even think about it until Joplin for Android starts supporting them.
-So this tree will not work properly:
-```
-Notebook
-    SubNotebook
-        Note 1
-        Note 2
-```
-UPDATE: now this kinda works in pre-release versions 2.10.x of android app, so i would try support it too
-
-
 ## ToDo
 - [x] Make folder only for public notes
 - [x] Test images/videos/etc export
@@ -30,6 +17,6 @@ UPDATE: now this kinda works in pre-release versions 2.10.x of android app, so i
 - [x] Figure out how I want to sort folders, articles in folders and implement this (i'm to lazy and stupid to do this)
 - [x] Move from "updated" to "created" datetime
 - [x] Rebuild only if Joplin database changed
-- [ ] Try to implement sub-notebooks aka nested folders
+- [x] Try to implement sub-notebooks aka nested folders (kinda, it's look great but messy inside)
 - [ ] Implement excerpt for news (latest pages list) on homepage (Should it have datetime?)
 - [ ] ...
