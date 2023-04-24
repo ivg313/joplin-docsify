@@ -18,5 +18,6 @@ Based on the joplinexport script written by Stavros Korokithakis: https://gitlab
 - [x] Move from "updated" to "created" datetime
 - [x] Rebuild only if Joplin database changed
 - [x] Try to implement sub-notebooks aka nested folders (kinda, it's look great but messy inside)
-- [ ] Implement excerpt for news (latest pages list) on homepage (Should it have datetime?)
+- [ ] Implement excerpt for news (latest pages list) on homepage. Should it have datetime?
+- [ ] Try to implement RSS
 - [ ] ...
