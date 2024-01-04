@@ -21,4 +21,5 @@ Based on the joplinexport script written by Stavros Korokithakis: https://gitlab
 - [ ] Implement excerpt for news (latest pages list) on homepage. Should "news" have datetime?
 - [ ] Try to implement RSS
 - [ ] Implement (or steal from Stavros) icons export
+- [ ] Created and updated looks weird. Also, implement translation somehow.
 - [ ] ...

@@ -16,7 +16,7 @@ from typing import Union
 
 parser = argparse.ArgumentParser(description='Some config...')
 parser.add_argument('-j', '--joplin', default=Path.home() /
-                    '.config/joplin-desktop', help="Path to Joplin directory.")
+                                              '.config/joplin-desktop', help="Path to Joplin directory.")
 parser.add_argument('-d', '--docsify', default='docsify',
                     help="Path to Docsify directory.")
 parser.add_argument('-t', '--theme', default='vue',
@@ -114,7 +114,7 @@ class Note:
         The introduction is level 0, and is treated differently here.
         """
         return (
-            "    " * (level - 1)
+                "    " * (level - 1)
         ) + f"{'- ' if level > 0 else ''}[{self.title}]({self.get_url()}.md)"
 
     def __lt__(self, other: Union["Folder", "Note"]) -> bool:
@@ -381,10 +381,13 @@ class JoplinExporter:
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/{args.theme}.css">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <link 
+    rel="stylesheet" 
+    href="//cdn.jsdelivr.net/npm/docsify@4/themes/{args.theme}.css" 
+  />
 </head>
 <body>
   <div id="app"></div>
@@ -404,7 +407,7 @@ class JoplinExporter:
     }}
   </script>
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
 </body>
 </html>
             """)
