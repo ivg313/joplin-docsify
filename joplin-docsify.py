@@ -145,6 +145,7 @@ class Resource:
 class JoplinExporter:
     """The main exporter class."""
     index_dir = Path(args.docsify)
+    index_dir.mkdir(parents=True, exist_ok=True)
     content_dir = Path(f"{args.docsify}/joplin-notes")
     static_dir = Path(f"{args.docsify}/joplin-resources")
     joplin_dir = Path(args.joplin)
@@ -364,9 +365,9 @@ class JoplinExporter:
         for folder in folder_list:
             for note in sorted(self.notes[folder.id], key=lambda n: n.title):
                 if note.is_public():
-                    dir = self.content_dir / folder.get_url()
-                    print(f"Exporting note {dir} {note.title}...")
-                    dir.mkdir(parents=True, exist_ok=True)
+                    note_dir = self.content_dir / folder.get_url()
+                    print(f"Exporting note {note_dir} {note.title}...")
+                    note_dir.mkdir(parents=True, exist_ok=True)
                     with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
                         outfile.write(
                             f"""> Created: {note.created_time:%c}, updated: {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
