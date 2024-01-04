@@ -22,7 +22,7 @@ parser.add_argument('-d', '--docsify', default='docsify',
 parser.add_argument('-t', '--theme', default='vue',
                     help='Docsify theme, default is "vue", alternatives: "buble", "dark" and "pure"')
 parser.add_argument('-n', '--name', default='My Notes',
-                    help='Name of your site.')
+                    help='Name of your site (in double quotes).')
 parser.add_argument('-s', '--save-index', action='store_true',
                     help='Do not overwrite index.html')
 parser.add_argument('-l', '--disable-latest', action='store_true',
@@ -325,13 +325,15 @@ class JoplinExporter:
         items = []
         news = []
         latest = []
+        ids = []
         for note_list in note_tree:
             lvl = 0
             for branch in note_list:
                 lvl += 1
                 if isinstance(branch, Folder):
-                    if branch.get_summary_line(lvl) not in items:
+                    if branch.id not in ids:
                         items.append(branch.get_summary_line(lvl))
+                        ids.append(branch.id)
                 elif isinstance(branch, Note):
                     news.append(branch)
                     items.append(branch.get_summary_line(lvl))
