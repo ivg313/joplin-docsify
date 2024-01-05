@@ -3,6 +3,7 @@ import mimetypes
 import re
 import sqlite3
 import argparse
+import json
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -53,6 +54,7 @@ class Folder:
     id: str
     parent_id: str
     title: str
+    icon: str
 
     def is_private(self) -> bool:
         """Return whether this folder is private."""
@@ -64,7 +66,7 @@ class Folder:
 
     def get_summary_line(self, level: int) -> str:
         """Get the appropriate summary file line for this folder."""
-        return ("    " * (level - 1)) + f"- {self.title}"
+        return ("    " * (level - 1)) + f"- {self.icon} {self.title}"
 
     def __lt__(self, other: Union["Folder", "Note"]) -> bool:
         """Support comparison, for sorting."""
@@ -235,9 +237,12 @@ class JoplinExporter:
         c.execute("""SELECT seq FROM sqlite_sequence WHERE name='item_changes';""")
         self.check_new(str(c.fetchone()[0]))
 
-        c.execute("""SELECT id, title, parent_id FROM folders;""")
+        c.execute("""SELECT id, title, parent_id, icon FROM folders;""")
         self.folders = {
-            id: Folder(id, parent_id, title) for id, title, parent_id in c.fetchall()
+            id: Folder(
+                id, parent_id, title, json.loads(icon).get("emoji", "") if icon else ""
+            )
+            for id, title, parent_id, icon in c.fetchall()
         }
 
         self.folders = {
