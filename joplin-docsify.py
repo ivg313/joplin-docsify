@@ -185,7 +185,7 @@ class JoplinExporter:
                     new_url = item_id
             if match.group(2):
                 new_url += match.group(2)
-            return f"]({new_url})"
+            return f"](<{new_url}>)"
 
         return re.sub(r"\]\(:/([a-f0-9]{32})(#.*?)?\)", replacement, note.body)
 
@@ -194,7 +194,7 @@ class JoplinExporter:
         note = self.note_lookup_dict.get(note_id)
         if not note:
             return None
-        return note.get_url()
+        return f"{self.parents_path(note.folder.id)}/{note.title}"
 
     def get_resource_url_by_id(self, resource_id: str) -> Optional[str]:
         """Return a resource's relative URL by its ID."""
@@ -289,7 +289,7 @@ class JoplinExporter:
     def write_summary(self):
         """Write the _sidebar.md for Docsify."""
         # We construct a note tree by adding each note into its parent.
-        note_tree: Dict[str, List[Union[Note, Folder]]] = defaultdict(list)
+        #note_tree: Dict[str, List[Union[Note, Folder]]] = defaultdict(list)
 
         # The note tree is a list of notes with their parents:
         # [
@@ -336,7 +336,8 @@ class JoplinExporter:
                         ids.append(branch.id)
                 elif isinstance(branch, Note):
                     news.append(branch)
-                    items.append(branch.get_summary_line(lvl))
+                    items.append(("    " * (lvl - 1)) + f"{'- ' if lvl > 0 else ''}[{branch.title}](<{self.parents_path(branch.folder.id)}/{branch.title}>)")
+
 
         with (self.content_dir / "_sidebar.md").open(mode="w", encoding="utf-8") as outfile:
             outfile.write(f"- [{args.name}](/)\n")
@@ -344,19 +345,22 @@ class JoplinExporter:
 
         for new in sorted(news, key=lambda n: n.created_time, reverse=True):
             latest.append(
-                f"[{new.folder.title} — {new.title}]({new.get_url()})")
+                f"[{new.title}](<{self.parents_path(new.folder.id)}/{new.title}>)")
+
 
         with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
             if introduction:
                 outfile.write(
                     f"""{self.resolve_note_links(introduction)}\n\n""")
                 if not args.disable_latest:
+                    outfile.write("Latest pages:\\\n")
                     outfile.write(f"\\\n".join(latest))
             else:
                 if not args.disable_latest:
+                    outfile.write("Latest pages:\\\n")
                     outfile.write(f"\\\n".join(latest))
                 else:
-                    # Docsify needed non-empty README.md to work. So lets add invisibe non-breaking space.
+                    # Docsify needed non-empty README.md to work. So let's add invisible non-breaking space.
                     outfile.write('&nbsp;')
 
     def export(self):
@@ -367,16 +371,31 @@ class JoplinExporter:
         for folder in folder_list:
             for note in sorted(self.notes[folder.id], key=lambda n: n.title):
                 if note.is_public():
-                    note_dir = self.content_dir / folder.get_url()
-                    print(f"Exporting note {note_dir} {note.title}...")
+                    note_dir = self.content_dir / self.parents_path(note.folder.id)
+                    print(f"Exporting note: {self.parents_path(note.folder.id)}/{note.title}")
                     note_dir.mkdir(parents=True, exist_ok=True)
-                    with (self.content_dir / (note.get_url() + ".md")).open(mode="w", encoding="utf-8") as outfile:
+                    with (note_dir / (note.title + ".md")).open(mode="w", encoding="utf-8") as outfile:
                         outfile.write(
-                            f"""> Created: {note.created_time:%c}, updated: {note.updated_time:%c}\n# {note.title}\n{self.resolve_note_links(note)}""")
+                            f"""> Created: {note.created_time:%c}, updated: {note.updated_time:%c}, in {self.parents_path(note.folder.id)}\n# {note.title}\n{self.resolve_note_links(note)}""")
         self.write_summary()
         self.copy_resources()
         if not args.save_index:
             self.write_html()
+
+    def parents(self, id: str):
+        """Return list of parent folders titles"""
+        parents = []
+        parents.append(self.folders[id].title)
+        def parent(id):
+            if self.folders[id].parent_id:
+                parents.append(self.folders[self.folders[id].parent_id].title)
+                parent(self.folders[self.folders[id].parent_id].id)
+            return parents
+
+        return parent(id)
+
+    def parents_path(self, id: str):
+        return "/".join(reversed(self.parents(id)))
 
     def write_html(self):
         with (self.index_dir / "index.html").open(mode="w", encoding="utf-8") as outfile:
