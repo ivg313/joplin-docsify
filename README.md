@@ -22,4 +22,5 @@ Based on the joplinexport script written by Stavros Korokithakis: https://gitlab
 - [ ] Try to implement RSS
 - [x] Implement (or steal from Stavros) icons export
 - [ ] Hardcoded words like "Created", "updated" and so on looks weird. Also, implement translation somehow.
+- [ ] Implement hidden pages (kinda work, need more tests)
 - [ ] ...

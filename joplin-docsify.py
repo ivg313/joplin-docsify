@@ -104,6 +104,19 @@ class Note:
             if keyword in self.tags:
                 return True
         return False
+    
+    def is_hidden(self) -> bool:
+        """
+        Check whether a note has tag hidden.
+
+        This function checks a note's tags and returns whether it
+        should be hidden.
+        """
+        keywords = ["hidden"]
+        for keyword in keywords:
+            if keyword in self.tags:
+                return True
+        return False
 
     def get_url(self) -> str:
         """Return the note's relative URL."""
@@ -339,7 +352,7 @@ class JoplinExporter:
                     if branch.id not in ids:
                         items.append(branch.get_summary_line(lvl))
                         ids.append(branch.id)
-                elif isinstance(branch, Note):
+                elif isinstance(branch, Note) and not branch.is_hidden():
                     news.append(branch)
                     items.append(("    " * (lvl - 1)) + f"{'- ' if lvl > 0 else ''}[{branch.title}](<{self.parents_path(branch.folder.id)}/{branch.title}>)")
 
