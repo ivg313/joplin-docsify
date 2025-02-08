@@ -21,6 +21,6 @@ Based on the joplinexport script written by Stavros Korokithakis: https://gitlab
 - [ ] Implement excerpt for news (latest pages list) on homepage. Should "news" have datetime?
 - [ ] Try to implement RSS
 - [x] Implement (or steal from Stavros) icons export
-- [ ] Hardcoded words like "Created", "updated" and so on looks weird. Also, implement translation somehow.
+- [x] Some kind of translation needed for hardcoded words like "created" and "updated". (i have zero fucks about people who don't understand english, so fuck it)
 - [ ] Implement hidden pages (kinda work, need more tests)
 - [ ] ...
