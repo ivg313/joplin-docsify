@@ -29,17 +29,12 @@ parser.add_argument('-s', '--save-index', action='store_true',
 parser.add_argument('-l', '--disable-latest', action='store_true',
                     help='Do not list latest notes on homepage')
 parser.add_argument('-f', '--force', action='store_true',
-                    help='Force rebuild even if nothing change')
+                    help='Force rebuilding even if nothing changes')
+parser.add_argument('-c', '--disable-cdn', action='store_true',
+                    help='Instead of CDN, use a local copy of Docsify')
+parser.add_argument('-b', '--blog', default='Blog',
+                    help='Blog folder name, default is "Blog"')
 args = parser.parse_args()
-
-
-def contains_word(word: str, text: str) -> bool:
-    """
-    Check whether `text` contains `word`, as a whole word.
-
-    Case insensitive.
-    """
-    return re.search(f"\\b{word}\\b".lower(), text.lower()) is not None
 
 
 def slugify(text):
@@ -56,10 +51,6 @@ class Folder:
     title: str
     icon: str
 
-    def is_private(self) -> bool:
-        """Return whether this folder is private."""
-        return contains_word("private", self.title)
-
     def get_url(self) -> str:
         """Return the folder's relative URL."""
         return slugify(self.title)
@@ -73,6 +64,8 @@ class Folder:
         if isinstance(other, Note):
             # Folders always come before notes.
             return True
+        if other.title == args.blog:
+            return False
         return self.title.lower() < other.title.lower()
 
     def __repr__(self) -> str:
@@ -118,6 +111,11 @@ class Note:
                 return True
         return False
 
+    def is_blog(self) -> bool:
+        if self.folder.title == args.blog:
+            return True
+        return False
+
     def get_url(self) -> str:
         """Return the note's relative URL."""
         return slugify(self.folder.title) + "/" + slugify(self.title)
@@ -134,7 +132,10 @@ class Note:
 
     def __lt__(self, other: Union["Folder", "Note"]) -> bool:
         """Support comparison, for sorting."""
-        return self.title.lower() < other.title.lower()
+        if other.is_blog():
+            return self.created_time > other.created_time
+        else:
+            return self.title.lower() < other.title.lower()
 
     def __repr__(self) -> str:
         """Pretty-print this class."""
@@ -259,7 +260,7 @@ class JoplinExporter:
         }
 
         self.folders = {
-            id: folder for id, folder in self.folders.items() if not folder.is_private()
+            id: folder for id, folder in self.folders.items()
         }
 
         # Get the tags by ID.
@@ -339,6 +340,7 @@ class JoplinExporter:
                 note_tree.append(note_item)
         note_tree.sort()
 
+
         # Generate the sidebar file.
         items = []
         news = []
@@ -416,6 +418,11 @@ class JoplinExporter:
         return "/".join(reversed(self.parents(id)))
 
     def write_html(self):
+        if args.disable_cdn:
+            docsify_path = ""
+        else:
+            docsify_path = "//cdn.jsdelivr.net/npm/docsify@4/"
+            
         with (self.index_dir / "index.html").open(mode="w", encoding="utf-8") as outfile:
             outfile.write(f"""
 <!DOCTYPE html>
@@ -426,7 +433,7 @@ class JoplinExporter:
   <meta charset="UTF-8" />
   <link 
     rel="stylesheet" 
-    href="//cdn.jsdelivr.net/npm/docsify@4/themes/{args.theme}.css" 
+    href="{docsify_path}lib/themes/{args.theme}.css" 
   />
 </head>
 <body>
@@ -446,8 +453,8 @@ class JoplinExporter:
       }},
     }}
   </script>
-  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <script src="{docsify_path}lib/docsify.min.js"></script>
+  <script src="{docsify_path}lib/plugins/search.min.js"></script>
 </body>
 </html>
             """)
