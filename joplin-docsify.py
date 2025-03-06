@@ -368,7 +368,7 @@ class JoplinExporter:
 
         for new in sorted(news, key=lambda n: n.created_time, reverse=True):
             latest.append(
-                f"[{new.title}](<{self.parents_path(new.folder.id)}/{new.title}>)")
+                f"[{new.title}](<{self.parents_path(new.folder.id)}/{new.title}>) ({new.created_time:%c})")
 
 
         with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:

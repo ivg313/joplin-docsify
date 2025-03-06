@@ -18,13 +18,13 @@ Based on the joplinexport script written by Stavros Korokithakis: https://gitlab
 - [x] Move from "updated" to "created" datetime
 - [x] Rebuild only if Joplin database changed
 - [x] Try to implement sub-notebooks aka nested folders (kinda, it's look great but messy inside)
-- [ ] Implement excerpt for news (latest pages list) on homepage. Should "news" have datetime?
+- [ ] Implement excerpt for news (latest pages list) on homepage. (excerpt looks ugly, fuck it, but i will implement datetime somehow)
 - [ ] Try to implement RSS
 - [x] Implement (or steal from Stavros) icons export
 - [x] Some kind of translation needed for hardcoded words like "created" and "updated". (i have zero fucks about people who don't understand english, so fuck it)
 - [x] Implement hidden pages
 - [x] Docsify source selection: CDN or local
-- [x] Blog 
+- [x] Blog (special folder with notes sorted by creation time)
 - [ ] More Themes (gonna take a look at this: https://jhildenbiddle.github.io/docsify-themeable/#/)
 - [ ] GitHub pages integration
 - [ ] Docker!
