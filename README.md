@@ -22,7 +22,7 @@ Based on the joplinexport script written by Stavros Korokithakis: https://gitlab
 - [ ] Try to implement RSS
 - [x] Implement (or steal from Stavros) icons export
 - [x] Some kind of translation needed for hardcoded words like "created" and "updated". (i have zero fucks about people who don't understand english, so fuck it)
-- [ ] Implement hidden pages (kinda work, need more tests) (empty folders shows up)
+- [x] Implement hidden pages
 - [x] Docsify source selection: CDN or local
 - [x] Blog 
 - [ ] More Themes (gonna take a look at this: https://jhildenbiddle.github.io/docsify-themeable/#/)

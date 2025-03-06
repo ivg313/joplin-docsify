@@ -330,7 +330,10 @@ class JoplinExporter:
                 item: Union[Folder, Note] = note
                 while True:
                     if isinstance(item, Note):
-                        item = item.folder
+                        if item.is_hidden():
+                            break
+                        else:
+                            item = item.folder
                     elif isinstance(item, Folder):
                         item = self.folders.get(item.parent_id)
                         if not item:
@@ -396,7 +399,7 @@ class JoplinExporter:
                     note_dir.mkdir(parents=True, exist_ok=True)
                     with (note_dir / (note.title + ".md")).open(mode="w", encoding="utf-8") as outfile:
                         outfile.write(
-                            f"""> Created: {note.created_time:%c}, updated: {note.updated_time:%c}, in {self.parents_path(note.folder.id)}\n# {note.title}\n{self.resolve_note_links(note)}""")
+                            f"""{"# Hidden Page\n" if note.is_hidden() else ""}> Created: {note.created_time:%c}, updated: {note.updated_time:%c}, in {self.parents_path(note.folder.id)}\n# {note.title}\n{self.resolve_note_links(note)}""")
         self.write_summary()
         self.copy_resources()
         if not args.save_index:
