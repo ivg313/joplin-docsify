@@ -210,8 +210,13 @@ class JoplinExporter:
            
             if Path(new_url).suffix in {".html", ".htm", ".markdown", ".md", ".mp3", ".mp4", ".ogg"}:
                 embed = " ':include'"
-            else:
+            # other files
+            elif Path(new_url).suffix not in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".mp4", ".ogg"}:
                 embed = " ':ignore :target=_blank'"
+                new_url = Path(f"joplin-notes/{note_dir}/{new_url}")
+            # images
+            else:
+                embed = ""
 
             return f"]({new_url}{embed})"
 
