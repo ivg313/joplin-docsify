@@ -192,23 +192,25 @@ class JoplinExporter:
         def replacement(match):
             item_id = match.group(1)
             new_url = self.get_note_url_by_id(item_id)
+            
             if new_url:
                 # new_url += ".html"
-                pass
+                return f"](<{new_url}>)"
             else:
                 resource_dir = self.content_dir / self.parents_path(note.folder.id) / "resources"
                 new_url = self.copy_resources_and_return_url(item_id, resource_dir)
                 if not new_url:
                     new_url = item_id
+            
             if match.group(2):
                 new_url += match.group(2)
            
             if Path(new_url).suffix in {".html", ".htm", ".markdown", ".md", ".mp3", ".mp4", ".ogg"}:
-                embed = "':include'"
+                embed = " ':include'"
             else:
                 embed = ""
 
-            return f"]({new_url} {embed})"
+            return f"]({new_url}{embed})"
 
         return re.sub(r"\]\(:/([a-f0-9]{32})(#.*?)?\)", replacement, note.body)
 
