@@ -196,14 +196,37 @@ class JoplinExporter:
                 # new_url += ".html"
                 pass
             else:
-                new_url = self.get_resource_url_by_id(item_id)
+                resource_dir = self.content_dir / self.parents_path(note.folder.id) / "resources"
+                new_url = self.copy_resources_and_return_url(item_id, resource_dir)
                 if not new_url:
                     new_url = item_id
             if match.group(2):
                 new_url += match.group(2)
-            return f"](<{new_url}>)"
+           
+            if Path(new_url).suffix in {".html", ".htm", ".markdown", ".md", ".mp3", ".mp4", ".ogg"}:
+                embed = "':include'"
+            else:
+                embed = ""
+
+            return f"]({new_url} {embed})"
 
         return re.sub(r"\]\(:/([a-f0-9]{32})(#.*?)?\)", replacement, note.body)
+
+    def copy_resources_and_return_url(self, resource_id: str, resource_dir) -> Optional[str]:
+        resource = self.resources.get(resource_id)
+        if not resource:
+            return None
+
+        src = Path(f"{self.joplin_dir}/resources/{resource_id}.{resource.extension}")
+        dst = Path(f"{resource_dir}/{resource_id}{resource.derived_ext}")
+
+        resource_dir.mkdir(parents=True, exist_ok=True)
+        copy(src,dst)
+
+        # Add the resource to the set of used resources, so we can only copy
+        # the resources that are used.
+        self.used_resources.add(resource_id)
+        return Path(f"resources/{resource_id}{resource.derived_ext}")
 
     def get_note_url_by_id(self, note_id: str) -> Optional[str]:
         """Return a note's relative URL by its ID."""
@@ -401,7 +424,7 @@ class JoplinExporter:
                         outfile.write(
                             f"""{"# Hidden Page\n" if note.is_hidden() else ""}> Created: {note.created_time:%c}, updated: {note.updated_time:%c}, in {self.parents_path(note.folder.id)}\n# {note.title}\n{self.resolve_note_links(note)}""")
         self.write_summary()
-        self.copy_resources()
+#        self.copy_resources()
         if not args.save_index:
             self.write_html()
 
@@ -444,16 +467,19 @@ class JoplinExporter:
   <script>
     window.$docsify = {{
       basePath: "joplin-notes",
+      alias: {{
+        '/.*/_sidebar.md': '/_sidebar.md'
+      }},
       loadSidebar: true,
       subMaxLevel: 10,
       search: 'auto',
-      markdown: {{
+/*      markdown: {{
         renderer: {{
           image: function (href, title, text) {{
             return `<img src="${{href}}" data-origin="${{href}}" alt="${{text}}">`
           }}
         }}
-      }},
+      }},*/
     }}
   </script>
   <script src="{docsify_path}lib/docsify.min.js"></script>

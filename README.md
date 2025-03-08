@@ -7,7 +7,7 @@ Based on the joplinexport script written by Stavros Korokithakis: https://gitlab
 ## ToDo
 - [x] Make folder only for public notes
 - [x] Test images/videos/etc export
-- [x] Rewrite files (and images) export: imho they should be in folder with same name as note or something like that. (kind of impossible, fuck it)
+- [x] Rewrite files (and images) export: imho they should be in folder with same name as note or something like that. (just "resources" folders inside notes folders)
 - [x] Remake SUMMARY.md generator to _sidebar.md
 - [x] See if the hyperlinks from Note to Note are working
 - [x] Decide how and where to display the last changed information
@@ -18,7 +18,7 @@ Based on the joplinexport script written by Stavros Korokithakis: https://gitlab
 - [x] Move from "updated" to "created" datetime
 - [x] Rebuild only if Joplin database changed
 - [x] Try to implement sub-notebooks aka nested folders (kinda, it's look great but messy inside)
-- [ ] Implement excerpt for news (latest pages list) on homepage. (excerpt looks ugly, fuck it, but i will implement datetime somehow)
+- [ ] Implement excerpt for news (latest pages list) on homepage. (excerpt looks ugly, fuck it, but i will implement showing datetime and folder somehow)
 - [ ] Try to implement RSS
 - [x] Implement (or steal from Stavros) icons export
 - [x] Some kind of translation needed for hardcoded words like "created" and "updated". (i have zero fucks about people who don't understand english, so fuck it)
