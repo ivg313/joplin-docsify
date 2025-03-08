@@ -197,8 +197,11 @@ class JoplinExporter:
                 # new_url += ".html"
                 return f"](<{new_url}>)"
             else:
-                resource_dir = self.content_dir / self.parents_path(note.folder.id) / "resources"
-                new_url = self.copy_resources_and_return_url(item_id, resource_dir)
+                if note.folder.id:
+                    note_dir = self.parents_path(note.folder.id)
+                else:
+                    note_dir = ""
+                new_url = self.copy_resources_and_return_url(item_id, note_dir)
                 if not new_url:
                     new_url = item_id
             
@@ -208,21 +211,21 @@ class JoplinExporter:
             if Path(new_url).suffix in {".html", ".htm", ".markdown", ".md", ".mp3", ".mp4", ".ogg"}:
                 embed = " ':include'"
             else:
-                embed = ""
+                embed = " ':ignore :target=_blank'"
 
             return f"]({new_url}{embed})"
 
         return re.sub(r"\]\(:/([a-f0-9]{32})(#.*?)?\)", replacement, note.body)
 
-    def copy_resources_and_return_url(self, resource_id: str, resource_dir) -> Optional[str]:
+    def copy_resources_and_return_url(self, resource_id: str, note_dir) -> Optional[str]:
         resource = self.resources.get(resource_id)
         if not resource:
             return None
 
         src = Path(f"{self.joplin_dir}/resources/{resource_id}.{resource.extension}")
-        dst = Path(f"{resource_dir}/{resource_id}{resource.derived_ext}")
+        dst = Path(f"{self.content_dir}/{note_dir}/resources/{resource_id}{resource.derived_ext}")
 
-        resource_dir.mkdir(parents=True, exist_ok=True)
+        Path(f"{self.content_dir}/{note_dir}/resources").mkdir(parents=True, exist_ok=True)
         copy(src,dst)
 
         # Add the resource to the set of used resources, so we can only copy
@@ -398,6 +401,7 @@ class JoplinExporter:
 
         with (self.content_dir / "README.md").open(mode="w", encoding="utf-8") as outfile:
             if introduction:
+                introduction.folder.id = ""
                 outfile.write(
                     f"""{self.resolve_note_links(introduction)}\n\n""")
                 if not args.disable_latest:
