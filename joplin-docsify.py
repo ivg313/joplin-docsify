@@ -486,6 +486,7 @@ class JoplinExporter:
   </script>
   <script src="{docsify_path}lib/docsify.min.js"></script>
   <script src="{docsify_path}lib/plugins/search.min.js"></script>
+  <script src="{docsify_path}lib/plugins/zoom-image.min.js"></script>
 </body>
 </html>
             """)
