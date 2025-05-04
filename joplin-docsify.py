@@ -478,6 +478,9 @@ class JoplinExporter:
   <script>
     window.$docsify = {{
       basePath: "joplin-notes",
+      markdown: {{
+        breaks: true,
+      }},
       alias: {{
         '/.*/_sidebar.md': '/_sidebar.md'
       }},
